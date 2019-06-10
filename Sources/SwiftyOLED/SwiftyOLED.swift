@@ -9,6 +9,8 @@ public protocol Drawable {
     var x: Int { get set }
     var y: Int { get set }
     
+    //This method should return points for the actual shape
+    //Do not add x and y offsets to these points
     func pointsForDrawing() -> [(Int, Int)]
 }
 
@@ -30,11 +32,73 @@ public struct Square: Drawable {
         
         var points = [(Int, Int)]()
         
-        for i in stride(from: x, to: x+sideSize, by: 1) { points.append((i, y)) }
-        for i in stride(from: y, to: x+sideSize, by: 1) { points.append((x+sideSize, i)) }
-        for i in stride(from: x+sideSize, to: x, by: -1) { points.append((i, y+sideSize)) }
-        for i in stride(from: y+sideSize, to: y, by: -1) { points.append((x, i)) }
+        for i in stride(from: 0, to: sideSize, by: 1) { points.append((i, 0)) }
+        for i in stride(from: 0, to: sideSize, by: 1) { points.append((sideSize, i)) }
+        for i in stride(from: sideSize, to: 0, by: -1) { points.append((i, sideSize)) }
+        for i in stride(from: sideSize, to: 0, by: -1) { points.append((0, i)) }
         
+        return points
+    }
+}
+
+public struct Rectangle: Drawable {
+    public var x: Int
+    public var y: Int
+    public var a: Int
+    public var b: Int
+    
+    public init(x: Int, y: Int, a: Int, b: Int) {
+        self.x = x
+        self.y = y
+        self.a = a
+        self.b = b
+    }
+    
+    public func pointsForDrawing() -> [(Int, Int)] {
+        guard a > 0 && b > 0 else {
+            fatalError("Side size can not be smaller then or equal to zero")
+        }
+        
+        var points = [(Int, Int)]()
+        
+        for i in stride(from: 0, to: a, by: 1) { points.append((i, 0)) }
+        for i in stride(from: 0, to: b, by: 1) { points.append((a, i)) }
+        for i in stride(from: a, to: 0, by: -1) { points.append((i, b)) }
+        for i in stride(from: b, to: 0, by: -1) { points.append((0, i)) }
+        
+        return points
+    }
+}
+
+public struct Circle: Drawable {
+    public var x: Int
+    public var y: Int
+    public var radius: Int
+    
+    public init(x: Int, y: Int, radius: Int) {
+        self.x = x
+        self.y = y
+        self.radius = radius
+    }
+    
+    public func pointsForDrawing() -> [(Int, Int)] {
+        guard radius > 0 else {
+            fatalError("Radius can not be smaller then or equal to zero")
+        }
+        
+        var points = [(Int, Int)]()
+        
+        for i in 0...2*radius {
+            for j in 0...2*radius {
+                let e1 = (i-radius)*(i-radius)
+                let e2 = (j-radius)*(j-radius)
+                let distanceToCenter: Double = sqrt(Double(e1+e2))
+                if distanceToCenter > Double(radius) - 0.5
+                && distanceToCenter < Double(radius) + 0.5 {
+                    points.append((i, j))
+                }
+            }
+        }
         return points
     }
 }
@@ -141,7 +205,7 @@ public final class display  {
             
             if normalizedX >= 0 && normalizedX <= 127
             && normalizedY >= 0 && normalizedY <= 31 {
-                self.drawPixel(x: UInt8(point.0), y: UInt8(point.1))
+                self.drawPixel(x: UInt8(normalizedX), y: UInt8(normalizedY))
             }
         })
     }
