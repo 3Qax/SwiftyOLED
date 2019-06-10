@@ -1,4 +1,9 @@
 import SwiftyGPIO
+#if os(macOS) || os(iOS)
+import Darwin
+#elseif os(Linux) || CYGWIN
+import Glibc
+#endif
 
 
 
@@ -47,30 +52,30 @@ public final class display  {
     
     
     func setup() {
-        send(command: Command.DisplayOff)
-        send(command: Command.SetDisplayClockDiv)
+        send(command: .DisplayOff)
+        send(command: .SetDisplayClockDiv)
         send(customCommand: 0x80)                                  // the suggested ratio 0x80
-        send(command: Command.SetMultiplex)
+        send(command: .SetMultiplex)
         send(customCommand: 0x1F)
-        send(command: Command.SetDisplayOffset)
+        send(command: .SetDisplayOffset)
         send(customCommand: 0x0)                                   // no offset
         send(customCommand: Command.SetStartLine.rawValue | 0x0)            // line #0
-        send(command: Command.ChargePump)
+        send(command: .ChargePump)
         send(customCommand: 0x14)
-        send(command: Command.MemoryMode)                    // 0x20
+        send(command: .MemoryMode)                    // 0x20
         send(customCommand: 0x00)                                  // 0x0 act like ks0108
         send(customCommand: Command.SEGREMAP.rawValue | 0x1)
-        send(command: Command.COMSCANDEC)
-        send(command: Command.SetComPins)
+        send(command: .COMSCANDEC)
+        send(command: .SetComPins)
         send(customCommand: 0x02)
-        send(command: Command.SetContrast)
+        send(command: .SetContrast)
         send(customCommand: 0x8F)
-        send(command: Command.SetPrecharge)
+        send(command: .SetPrecharge)
         send(customCommand: 0xF1)
-        send(command: Command.SetVComDetect)
+        send(command: .SetVComDetect)
         send(customCommand: 0x40)
-        send(command: Command.DisplayAllOnResume)
-        send(command: Command.NormalDisplay)
+        send(command: .DisplayAllOnResume)
+        send(command: .NormalDisplay)
     }
     
     public init(on interface: I2CInterface, address: Int = 0x3C) {
@@ -79,6 +84,13 @@ public final class display  {
         setup()
         send(command: Command.DisplayOn)
         display()
+    }
+    
+    //Makes pixel at given coordinates white
+    //Works in iPhone like coordinate system
+    public func drawPixel(x: UInt8, y: UInt8){
+        //since swift does not offer pow(Int, Int) conversion to double and back to UInt8 is necessary
+        buffer[Int(y/8)*128+Int(x)] |= UInt8(pow(Double(2), Double(y%8)))
     }
     
     //Set the entire display buffer to white
