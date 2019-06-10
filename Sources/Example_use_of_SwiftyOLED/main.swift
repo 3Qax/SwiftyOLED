@@ -49,12 +49,9 @@ func drawHearts() {
 }
 
 drawHearts()
+let mySquare = Square(x: 10, y: 10, sideSize: 10)
+myOLED.draw(mySquare)
 myOLED.display()
-while(true) {
-    for i in 0...255 {
-        myOLED.setBrightness(.custom(value: UInt8(i)))
-    }
-}
 
 
 

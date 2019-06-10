@@ -5,7 +5,39 @@ import Darwin
 import Glibc
 #endif
 
+public protocol Drawable {
+    var x: Int { get set }
+    var y: Int { get set }
+    
+    func pointsForDrawing() -> [(Int, Int)]
+}
 
+public struct Square: Drawable {
+    public var x: Int
+    public var y: Int
+    public var sideSize: Int
+    
+    public init(x: Int, y: Int, sideSize: Int) {
+        self.x = x
+        self.y = y
+        self.sideSize = sideSize
+    }
+    
+    public func pointsForDrawing() -> [(Int, Int)] {
+        guard sideSize > 0 else {
+            fatalError("Side size can not be smaller then or equal to zero")
+        }
+        
+        var points = [(Int, Int)]()
+        
+        for i in stride(from: x, to: x+sideSize, by: 1) { points.append((i, y)) }
+        for i in stride(from: y, to: x+sideSize, by: 1) { points.append((x+sideSize, i)) }
+        for i in stride(from: x+sideSize, to: x, by: -1) { points.append((i, y+sideSize)) }
+        for i in stride(from: y+sideSize, to: y, by: -1) { points.append((x, i)) }
+        
+        return points
+    }
+}
 
 public final class display  {
     
@@ -98,6 +130,20 @@ public final class display  {
     public func drawPixel(x: UInt8, y: UInt8){
         //since swift does not offer pow(Int, Int) conversion to double and back to UInt8 is necessary
         buffer[Int(y/8)*128+Int(x)] |= UInt8(pow(Double(2), Double(y%8)))
+    }
+    
+    //Draw objets, which conforms to Drawable
+    //Drawing outside screen is possible
+    public func draw(_ object: Drawable) {
+        object.pointsForDrawing().forEach({ [unowned self] point in
+            let normalizedX = point.0 + object.x
+            let normalizedY = point.1 + object.y
+            
+            if normalizedX >= 0 && normalizedX <= 127
+            && normalizedY >= 0 && normalizedY <= 31 {
+                self.drawPixel(x: UInt8(point.0), y: UInt8(point.1))
+            }
+        })
     }
     
     //Set the entire display buffer to white
