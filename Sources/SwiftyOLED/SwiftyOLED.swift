@@ -47,43 +47,50 @@ public final class display  {
         case VerticalAndRightHorizontalScroll       = 0x29
         case VerticalAndLeftHorizontalScroll        = 0x2A
     }
+    public enum Brightness {
+        case dimmed
+        case bright
+        case custom(value: UInt8)
+    }
+    public enum State {
+        case on
+        case off
+    }
     
     
     
-    
-    func setup() {
-        send(command: .DisplayOff)
+    //Please refere to page 10 (section 4.4) of UG-2832HSWEG02 datasheet for more info.
+    func initialization() {
+        self.turn(.off)
         send(command: .SetDisplayClockDiv)
         send(customCommand: 0x80)                                  // the suggested ratio 0x80
         send(command: .SetMultiplex)
         send(customCommand: 0x1F)
         send(command: .SetDisplayOffset)
         send(customCommand: 0x0)                                   // no offset
-        send(customCommand: Command.SetStartLine.rawValue | 0x0)            // line #0
+        send(customCommand: Command.SetStartLine.rawValue | 0x0)   // line #0
         send(command: .ChargePump)
         send(customCommand: 0x14)
-        send(command: .MemoryMode)                    // 0x20
+        send(command: .MemoryMode)                                  // 0x20
         send(customCommand: 0x00)                                  // 0x0 act like ks0108
         send(customCommand: Command.SEGREMAP.rawValue | 0x1)
         send(command: .COMSCANDEC)
         send(command: .SetComPins)
         send(customCommand: 0x02)
-        send(command: .SetContrast)
-        send(customCommand: 0x8F)
+        self.setBrightness(.custom(value: UInt8(0x8F)))
         send(command: .SetPrecharge)
         send(customCommand: 0xF1)
         send(command: .SetVComDetect)
         send(customCommand: 0x40)
         send(command: .DisplayAllOnResume)
         send(command: .NormalDisplay)
+        self.turn(.on)
     }
     
     public init(on interface: I2CInterface, address: Int = 0x3C) {
         self.i2c = interface
         self.address = address
-        setup()
-        send(command: Command.DisplayOn)
-        display()
+        initialization()
     }
     
     //Makes pixel at given coordinates white
@@ -114,6 +121,30 @@ public final class display  {
         sendBuffer()
     }
     
+    //Sets brightness of display to either .dimmed or .bright
+    public func setBrightness(_ brightness: Brightness) {
+        switch brightness {
+        case .dimmed:
+            send(command: .SetContrast)
+            send(customCommand: 0x00)
+        case .bright:
+            send(command: .SetContrast)
+            send(customCommand: 0xCF)
+        case .custom(let value):
+            send(command: .SetContrast)
+            send(customCommand: value)
+        }
+    }
+    
+    public func turn(_ state: State) {
+        switch state {
+        case .on:
+            send(command: .DisplayOn)
+        case .off:
+            send(command: .DisplayOff)
+        }
+    }
+    
 }
 
 //Extension for handling data transfers to display
@@ -130,11 +161,6 @@ extension display {
         for pageColumn in buffer {
             i2c.writeByte(self.address, command: 0b01000000, value: pageColumn) //Co=0 D/C#=1
         }
-        //        print("Buffer count: \(buffer.count)")
-        //        i2c.writeData(self.address, command: 0b01000000, values: Array(buffer[0...127]))
-        //        i2c.writeData(self.address, command: 0b01000000, values: Array(buffer[128...255]))
-        //        i2c.writeData(self.address, command: 0b01000000, values: Array(buffer[256...383]))
-        //        i2c.writeData(self.address, command: 0b01000000, values: Array(buffer[384...511]))
     }
     
 }

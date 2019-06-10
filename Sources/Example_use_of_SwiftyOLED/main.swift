@@ -1,5 +1,10 @@
 import SwiftyOLED
 import SwiftyGPIO
+#if os(macOS) || os(iOS)
+import Darwin
+#elseif os(Linux) || CYGWIN
+import Glibc
+#endif
 
 
 
@@ -45,6 +50,12 @@ func drawHearts() {
 
 drawHearts()
 myOLED.display()
+while(true) {
+    for i in 0...255 {
+        myOLED.setBrightness(.custom(value: UInt8(i)))
+    }
+}
+
 
 
 
