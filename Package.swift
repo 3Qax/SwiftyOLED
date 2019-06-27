@@ -8,9 +8,6 @@ let package = Package(
         .library(
             name: "SwiftyOLED",
             targets: ["SwiftyOLED"]),
-        .executable(
-            name: "Example_use_of_SwiftyOLED",
-            targets: ["Example_use_of_SwiftyOLED"]),
     ],
     dependencies: [
         .package(url: "https://github.com/uraimo/SwiftyGPIO.git", .exact("1.1.3")),
@@ -19,9 +16,5 @@ let package = Package(
         .target(
             name: "SwiftyOLED",
             dependencies: ["SwiftyGPIO"]),
-        .target(
-            name: "Example_use_of_SwiftyOLED",
-            dependencies: ["SwiftyOLED", "SwiftyGPIO"]
-        )
     ]
 )
