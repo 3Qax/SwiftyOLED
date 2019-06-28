@@ -176,9 +176,25 @@ extension display {
         i2c.writeByte(self.address, command: 0b00000000, value: customCommand) //Co=0 D/C#=0
     }
     
-    func sendBuffer() {
+    //This method is slow, use it only when neccessary!
+    //Usage of sendBuffer() is higly recommended
+    func sendBufferByteByByte() {
         for pageColumn in buffer {
             i2c.writeByte(self.address, command: 0b01000000, value: pageColumn) //Co=0 D/C#=1
+        }
+    }
+    
+    func sendBuffer() {
+        
+        //send packages of 32 Bytes, which is I2C max number of bytes send at once
+        let numberOfFullPackets = buffer.count/32
+        for i in 1...numberOfFullPackets {
+            i2c.writeI2CData(self.address, command: 0b01000000, values: Array(buffer[(i-1)*32...(i*32)-1]))
+        }
+        
+        //if there aren't enought bytes left to form a full (32 Bytes) package send them
+        if numberOfFullPackets*32 != buffer.count {
+            i2c.writeI2CData(self.address, command: 0b01000000, values: Array(buffer[numberOfFullPackets*32...buffer.count-1]))
         }
     }
     

@@ -58,7 +58,7 @@
             "OBJ_22",
             "OBJ_23"
          );
-         name = "SwiftyGPIO 1.1.3";
+         name = "SwiftyGPIO 1.1.7";
          path = ".build/checkouts/SwiftyGPIO/Sources";
          sourceTree = "SOURCE_ROOT";
       };
@@ -131,8 +131,8 @@
       "OBJ_24" = {
          isa = "PBXGroup";
          children = (
-            "SwiftyGPIO::SwiftyGPIO::Product",
-            "SwiftyOLED::SwiftyOLED::Product"
+            "SwiftyOLED::SwiftyOLED::Product",
+            "SwiftyGPIO::SwiftyGPIO::Product"
          );
          name = "Products";
          path = "";
