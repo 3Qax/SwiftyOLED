@@ -22,22 +22,20 @@ This library is under development. There wasn't even first release.
 
 ### Example code
 
-Make sure `I2CInterface`  and I2C address matches the device you have connected. 
+Make sure I2C Interface and I2C address are correct.
 
 ```swift
 import SwiftyOLED
 import SwiftyGFX
 import SwiftyGPIO
 
-
-
 let i2cs = SwiftyGPIO.hardwareI2Cs(for: .RaspberryPiPlusZero)!
 // Make sure you entered a correct parameters below
-let myOLED = display(on: i2cs[1], address: 0x3C)
+let myOLED = OLED(connectedTo: i2cs[1], at: 0x3C)
 
-let myText = Text("Hello world!", font: "/home/pi/myOLED/Arial.ttf", at: Point(x: 0, y: 0))
+let myText = Text("Hello world!", font: "/home/pi/myOLED/Arial.ttf")
 
-myOLED.draw(myText.generatePointsForDrawing().map({ return ($0.x, $0.y) }), at: (0, 0))
+myOLED.draw(points: myText.generatePointsForDrawing())
 myOLED.display()
 ```
 

@@ -7,7 +7,7 @@ import Glibc
 
 
 
-public final class display  {
+public final class OLED  {
     
     private var buffer = Array<UInt8>(repeating: 0, count: 128*(32/8))
     private let i2c: I2CInterface
@@ -87,7 +87,7 @@ public final class display  {
         self.turn(.on)
     }
     
-    public init(on interface: I2CInterface, address: Int = 0x3C) {
+    public init(connectedTo interface: I2CInterface, at address: Int) {
         self.i2c = interface
         self.address = address
         initialization()
@@ -102,7 +102,7 @@ public final class display  {
     
     //Draw objet (arrary of tuplets (x and y points)) at given origin
     //Drawing outside screen is possible
-    public func draw(_ points: [(Int, Int)], at origin: (Int, Int)) {
+    public func draw(points: [(Int, Int)], at origin: (Int, Int) = (0, 0)) {
         
         // origin.0 is x of origin
         // origin.1 is y of origin
@@ -167,7 +167,7 @@ public final class display  {
 }
 
 //Extension for handling data transfers to display
-extension display {
+extension OLED {
     func send(command: Command) {
         i2c.writeByte(self.address, command: 0b00000000, value: command.rawValue) //Co=0 D/C#=0
     }
