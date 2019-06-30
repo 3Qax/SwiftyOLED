@@ -6,8 +6,8 @@ public final class OLED  {
     
     private let i2c: I2CInterface
     private let address: Int
-    private let width: UInt
-    private let height: UInt
+    private let width: Int
+    private let height: Int
     private var buffer: Array<UInt8>
     
     public enum Brightness {
@@ -23,11 +23,25 @@ public final class OLED  {
     
     
     
-    public init(connectedTo interface: I2CInterface, at address: Int, width: UInt, height: UInt) {
+    public init(connectedTo interface: I2CInterface, at address: Int, width: Int, height: Int) {
+        
+        guard interface.isReachable(address) else {
+            fatalError("""
+                Can not reach display at given interface and address!
+                Make sure that those are correct and the everything is wired correctly!
+                """)
+        }
         self.i2c = interface
         self.address = address
+        
+        guard width > 0 else { fatalError("Width have to be higher than 0!") }
+        guard width <= 128 else { fatalError("SSD1306 driver does not support widths bigger than 128") }
         self.width = width
+        
+        guard height > 0 else { fatalError("Height have to be higher than 0!") }
+        guard height <= 64 else { fatalError("SSD1306 driver does not support heights bigger than 64") }
         self.height = height
+        
         self.buffer = Array<UInt8>(repeating: 0, count: Int(width*(height/8)))
         initialization()
     }
@@ -68,7 +82,7 @@ public final class OLED  {
         //if given point is in display's range draw it
         if point.0 >= 0 && point.0 <= width-1
         && point.1 >= 0 && point.1 <= height-1 {
-            buffer[Int(point.1/8)*Int(width)+Int(point.0)] |=  1<<(point.1%8)
+            buffer[Int(point.1/8)*width+Int(point.0)] |=  1<<(point.1%8)
         }
     
     }
@@ -87,12 +101,12 @@ public final class OLED  {
     
     //Makes the entire buffer white
     public func fill() {
-        buffer = Array<UInt8>(repeating: UInt8.max, count: Int(width*(height/8)))
+        buffer = Array<UInt8>(repeating: UInt8.max, count: width*(height/8))
     }
     
     //Makes the entire buffer black
     public func clear() {
-        buffer = Array<UInt8>(repeating: 0, count: Int(width*(height/8)))
+        buffer = Array<UInt8>(repeating: 0, count: width*(height/8))
     }
     
     //Makes data from buffer appear on physical display
