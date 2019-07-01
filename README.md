@@ -57,7 +57,7 @@ To create the instance of OLED use the follwoing initializer
 ```
 Pass the I2C interface that display is connected to and specify at which address device listens.
 Enter the width and height (in px) based on the specification of display you have. Probably it will be 128x32 or 128x64.
-Initialization will fail on runtime if display is unreachable or if given height or width doesn't make sens.
+Initialization will fail on runtime if display is unreachable or if given height or width doesn't make sense (exceed driver supported range).
 
 ### Drawing
 
@@ -73,6 +73,7 @@ The display works in iOS like coordinate system. So:
 * (0, 0) is top left pixel
 * X axis increases to the right
 * Y axis increases downwards
+
 Point consists of (respectively) x and y coordinates
 
 If you would like to clean (make black) the __local buffer__ do it like
@@ -94,7 +95,7 @@ This will make display reflect the actual state of local buffer. After that loca
 
 ### Brightness
 
-There is even a option to change the brightness by calling
+There is even an option to change the brightness by calling
 ```swift
     public func set(brightness: Brightness)
 ```
@@ -102,9 +103,9 @@ There are two recomended setting: `.dimmed` or `.bright`, however if you wish so
 
 ### Switching on and off
 
-If your project require low power consumption or showing data on display only from time to time take a look at
+If your project requires low power consumption or showing data on display only from time to time take a look at
 ```swift
-public func turn(_ state: State)
+    public func turn(_ state: State)
 ```
 It allows you to either turn it `.on` or `.off`. Display is configured to display the latest data it have recived on resume (turn on after being turned off). The display after being initialized is automatically turned on.
 
