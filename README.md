@@ -13,7 +13,7 @@ This library is under development. There wasn't even first release.
 ### Prerequisites
 * Wire the display
 * Create new project with SwiftPM like `swift package init --type executable`
-* Add the following packages as your dependencies in your Swift package manifest file aka __Package.swift__ like
+* Add the following packages as dependencies in package manifest file aka __Package.swift__ like
 ```swift
 .package(url: "https://github.com/3Qax/SwiftyOLED.git", from: "1.0.0"),
 .package(url: "https://github.com/3Qax/SwiftyGFX.git", from: "1.0.0"),
@@ -49,7 +49,65 @@ That's all. It's really that simple!
 
 ## Usage 🛠
 
-TODO: provide list and description of core function here
+### Initialization
+
+To create the instance of OLED use the follwoing initializer
+```swift
+    public init(connectedTo interface: I2CInterface, at address: Int, width: Int, height: Int)
+```
+Pass the I2C interface that display is connected to and specify at which address device listens.
+Enter the width and height (in px) based on the specification of display you have. Probably it will be 128x32 or 128x64.
+Initialization will fail on runtime if display is unreachable or if given height or width doesn't make sens.
+
+### Drawing
+
+Once you've got the reference to the display it's time to draw something!
+This can be done by calling one of these methods
+```swift
+    public func draw(point: (Int, Int))
+    public func draw(points: [(Int, Int)])
+```
+Doing so changes the color of point or points at given coordinates to white in __local buffer__. This means that __drawn points will be not visible until calling `display()`__.
+
+The display works in iOS like coordinate system. So:
+* (0, 0) is top left pixel
+* X axis increases to the right
+* Y axis increases downwards
+Point consists of (respectively) x and y coordinates
+
+If you would like to clean (make black) the __local buffer__ do it like
+```swift
+    public func clear()
+```
+Or if you are on the light side of force this method might come in handy
+```swift
+    public func fill()
+```
+
+### Displaying drawn things
+
+Once you have drawn everything you wanted and want to make it visible call
+```swift
+    public func display()
+```
+This will make display reflect the actual state of local buffer. After that local buffer will be cleared. The API is designed is such a way, because transfering data over I2C is quite slow operation. Call this method only after you have drawn everything.
+
+### Brightness
+
+There is even a option to change the brightness by calling
+```swift
+    public func set(brightness: Brightness)
+```
+There are two recomended setting: `.dimmed` or `.bright`, however if you wish so you can set custom level like `.custom(value: 0x8F)`
+
+### Switching on and off
+
+If your project require low power consumption or showing data on display only from time to time take a look at
+```swift
+public func turn(_ state: State)
+```
+It allows you to either turn it `.on` or `.off`. Display is configured to display the latest data it have recived on resume (turn on after being turned off). The display after being initialized is automatically turned on.
+
 
 ## Performance 💨
 
