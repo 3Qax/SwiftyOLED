@@ -120,7 +120,13 @@ It allows you to either turn it `.on` or `.off`. Display is configured to displa
 
 ## Performance 💨
 
-TODO: provide valueable info here
+Performance was tested on geniune RaspberryPi ZERO v1.3 running Raspbian Stretch Lite using SwiftyGPIO 1.1.7.
+
+| Display size (px)  | Avarege time of `display()`  |
+|:-------------------:|:---------------------------------:|
+| 96x16                  | 7ms                                        |
+| 128x32                | 16ms                                      |
+| 128x64                | 32ms                                      |
 
 ## Contributing 🤝
 
