@@ -10,6 +10,9 @@ public final class OLED  {
     private let height: Int
     private var buffer: Array<UInt8>
     
+    public private(set) var isInverted: Bool   = false
+    public private(set) var isOn: Bool         = true
+    
     public enum Brightness {
         case dimmed
         case bright
@@ -120,6 +123,18 @@ public final class OLED  {
         sendBuffer()
     }
     
+    //Inverts display's interpretation of the buffer
+    //What previously was black will be white and the other way around
+    public func set(inversion: Bool) {
+        if inversion {
+            send(command: .InvertDisplay)
+            self.isInverted = true
+        } else {
+            send(command: .NormalDisplay)
+            self.isInverted = false
+        }
+    }
+    
     public func set(brightness: Brightness) {
         switch brightness {
         case .dimmed:
@@ -134,12 +149,14 @@ public final class OLED  {
         }
     }
     
-    public func turn(_ state: State) {
-        switch state {
+    public func turn(_ designatedState: State) {
+        switch designatedState {
         case .on:
             send(command: .DisplayOn)
+            self.isOn = true
         case .off:
             send(command: .DisplayOff)
+            self.isOn = false
         }
     }
     

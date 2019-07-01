@@ -85,6 +85,14 @@ Or if you are on the light side of force this method might come in handy
     public func fill()
 ```
 
+### Inversion
+
+If you wish to draw things in black on white display you can use mentioned above methods but set the display to interprete everything backwards. So, `clear()` would make whole local buffer white and drawing would make given points black. It is as simple as calling
+```swift
+    public func set(inversion: Bool)
+```
+By default it off. You can check wether display is inverted by accessing _read only_ property called `isInverted`.
+
 ### Displaying drawn things
 
 Once you have drawn everything you wanted and want to make it visible call
@@ -107,7 +115,7 @@ If your project requires low power consumption or showing data on display only f
 ```swift
     public func turn(_ state: State)
 ```
-It allows you to either turn it `.on` or `.off`. Display is configured to display the latest data it have recived on resume (turn on after being turned off). The display after being initialized is automatically turned on.
+It allows you to either turn it `.on` or `.off`. Display is configured to display the latest data it have recived on resume (turn on after being turned off). The display after being initialized is automatically turned on. Display's state is stored in _read only_ property called `isOn`.
 
 
 ## Performance 💨
