@@ -4,27 +4,36 @@ A Swift library for OLED displays based on SSD1306 and SSD1305 drivers.
 It is just a set of functions for handling mentioned aboved drivers.
 It is __not__ a graphics library. For that I would like to recommend a [SwiftyGFX](https://github.com/3Qax/SwiftyGFX), which I will be using here as an example. However you are free to use your own.
 
-## Warning ⚠️
-
-This library is under development. There wasn't even first release.
-
 ## Getting Started 💡
 
+In this section you will create your first project
+
 ### Prerequisites
+
 * Wire the display
+* Make sure you know to which I2C interface you have wired the display
+* Make sure you are aware of a I2C address of display module you have. For most cases it will be 0x3C or 0x3D. If you are unsure run `sudo apt-get install i2c-tools && sudo i2cdetect -y 1`. Confused? [take a look here](https://learn.adafruit.com/adafruits-raspberry-pi-lesson-4-gpio-setup/configuring-i2c#testing-i2c-5-14)
 * Create new project with SwiftPM like `swift package init --type executable`
-* Add the following packages as dependencies in package manifest file aka __Package.swift__ like
+
+### Dependencies
+
+In your __Package.swift__ file:
+* Add the following packages as dependencies
 ```swift
 .package(url: "https://github.com/3Qax/SwiftyOLED.git", from: "1.0.0"),
 .package(url: "https://github.com/3Qax/SwiftyGFX.git", from: "1.0.0"),
 .package(url: "https://github.com/uraimo/SwiftyGPIO.git", from: "1.0.0"),
 ```
-* Make sure you know to which I2C interface you have wired the display
-* Make sure you are aware of a I2C address of display module you have. For most cases it will be 0x3C or 0x3D. If you are unsure run `sudo apt-get install i2c-tools && sudo i2cdetect -y 1`
+* Show SwiftPM that your target will need those dependencies
+```swift
+.target(
+    name: "NameOfYourProject",
+    dependencies: ["SwiftyOLED", "SwiftyGFX", "SwiftyGPIO"]),
+```
 
 ### Code
 
-Paste the following code into your source file, which most likely will be __main.swift__. Change I2C Interface and I2C address if needed.
+Paste the following code into your source file, which most likely will be in _Sources/NameOfYourProject/**main.swift**_. Change I2C Interface and I2C address if needed. Set width and height of your display according to specification of model you have bought.
 
 ```swift
 import SwiftyOLED
@@ -35,17 +44,17 @@ let i2cs = SwiftyGPIO.hardwareI2Cs(for: .RaspberryPiPlusZero)!
 // Make sure you entered a correct parameters below
 let myOLED = OLED(connectedTo: i2cs[1], at: 0x3C, width: 128, height: 32)
 
-let myText = Text("Hello world!", font: "/home/pi/myOLED/Arial.ttf")
+let myText = Text("Hello world!")
 
 myOLED.draw(points: myText.generatePointsForDrawing())
 myOLED.display()
 ```
 
-### Result
+### Run
 
-Just do `swift build` and `swift run`. You should see:
+Just do `swift build` and than `swift run`. You should see:
 ![Image of Raspberry Pi with PiOLED connected to it on which "Hello world!" is visible](https://raw.githubusercontent.com/3Qax/SwiftyOLED/develop/Examples/hello%20world/result.jpg)
-That's all. It's really that simple!
+That's all. It's really that simple! Complete project can be found in _/Examples/hello world/_ folder.
 
 ## Usage 🛠
 
@@ -60,6 +69,8 @@ Enter the width and height (in px) based on the specification of display you hav
 Initialization will fail on runtime if display is unreachable or if given height or width doesn't make sense (exceed driver supported range).
 
 ### Drawing
+
+If you don't feel like writing your graphics library today, take a look at my easy to use graphics library [SwiftyGFX](https://github.com/3Qax/SwiftyGFX). It provides a bunch of primitives like Circles and Rectangles, but is also capable of text rendering. See it's README.md for details.
 
 Once you've got the reference to the display it's time to draw something!
 This can be done by calling one of these methods
@@ -87,7 +98,7 @@ Or if you are on the light side of force this method might come in handy
 
 ### Inversion
 
-If you wish to draw things in black on white display you can use mentioned above methods but set the display to interprete everything backwards. So, `clear()` would make whole local buffer white and drawing would make given points black. It is as simple as calling
+In order to draw things in black on white display use above mentioned  methods and set the display to interprete everything inversly. Logically, `clear()` will make whole local buffer white and drawing would make given points black. It is as simple as calling
 ```swift
     public func set(inversion: Bool)
 ```
@@ -134,8 +145,8 @@ Any suggestions and contributions are welcome, as long as they are up to scratch
 
 ## Acknowledgments 📣
 
-* Big inspiration and a lot of knowledge was taken from a [Adafruit CircuitPython library for SSD1306](https://github.com/adafruit/Adafruit_CircuitPython_SSD1306)
 * This library use, require and rely on [SwiftyGPIO](https://github.com/uraimo/SwiftyGPIO)
+* Big inspiration and a lot of knowledge was taken from a [Adafruit CircuitPython library for SSD1306](https://github.com/adafruit/Adafruit_CircuitPython_SSD1306)
 
 ## Datasheets 📚
 
