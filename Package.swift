@@ -10,7 +10,7 @@ let package = Package(
             targets: ["SwiftyOLED"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/uraimo/SwiftyGPIO.git", .exact("1.1.3")),
+        .package(url: "https://github.com/uraimo/SwiftyGPIO.git", from: "1.1.7"),
     ],
     targets: [
         .target(

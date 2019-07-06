@@ -1,4 +1,13 @@
+#macOS stuff 
 .DS_Store
+
+#SwiftPM stuff
 /.build
 /Packages
 .swiftpm/
+.resolved
+
+#XCode stuff
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
