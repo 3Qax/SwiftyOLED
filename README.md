@@ -52,7 +52,7 @@ myOLED.display()
 
 ### Run
 
-Just do `swift build` and than `swift run`. You should see:
+Just do `swift build` and then `swift run`. You should see:
 ![Image of Raspberry Pi with PiOLED connected to it on which "Hello world!" is visible](https://raw.githubusercontent.com/3Qax/SwiftyOLED/develop/Examples/hello%20world/result.jpg)
 That's all. It's really that simple! Complete project can be found in _/Examples/hello world/_ folder.
 
