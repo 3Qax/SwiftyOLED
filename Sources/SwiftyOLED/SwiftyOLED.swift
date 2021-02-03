@@ -57,7 +57,7 @@ public final class OLED  {
         send(command: .SetDisplayClockDiv)
         send(customCommand: 0x80)                                  // the suggested ratio 0x80
         send(command: .SetMultiplex)
-        send(customCommand: 0x1F)
+        send(customCommand: height == 32 ? 0x1F : 0x3F) // height - 1
         send(command: .SetDisplayOffset)
         send(customCommand: 0x0)                                   // no offset
         send(customCommand: Command.SetStartLine.rawValue | 0x0)   // line #0
@@ -68,7 +68,7 @@ public final class OLED  {
         send(customCommand: Command.SEGREMAP.rawValue | 0x1)
         send(command: .COMSCANDEC)
         send(command: .SetComPins)
-        send(customCommand: 0x02)
+        send(customCommand: height == 32 ? 0x02 : 0x12)
         self.set(brightness: .custom(value: UInt8(0x8F)))
         send(command: .SetPrecharge)
         send(customCommand: 0xF1)
@@ -93,7 +93,6 @@ public final class OLED  {
     //Makes points (arrary of tuplets (x and y coordinates)) white
     //by calling draw(point:_) for each point
     public func draw(points: [(Int, Int)]) {
-        
         for point in points {
             // point.0 is x of point
             // point.1 is y of point
